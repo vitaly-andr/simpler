@@ -16,14 +16,23 @@ module Simpler
     end
 
     def route_for(env)
-      @routes[0]
+      method = env['REQUEST_METHOD'].downcase.to_sym
+      path = env['PATH_INFO']
+      @routes.find { |route| route.match?(method, path) }
     end
 
     private
 
     def add_route(method, path, route_point)
-      route = Route.new(method, path, Controller)
-      @routes << route
+      route_point = route_point.split('#')
+      controller = controller_from_string(route_point[0])
+      action = route_point[1]
+      route = Route.new(method, path, controller, action)
+      @routes.push(route)
+    end
+
+    def controller_from_string(controller_name)
+      Object.const_get("#{controller_name.capitalize}Controller")
     end
   end
 end

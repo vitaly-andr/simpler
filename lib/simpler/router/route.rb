@@ -2,10 +2,15 @@ module Simpler
   class Router
     class Route
       attr_reader :controller, :action
-      def initialize(method, path, controller)
+      def initialize(method, path, controller, action)
         @method = method
         @path = path
-        @handler = handler
+        @controller = controller
+        @action = action
+      end
+
+      def match?(method, path)
+        @method == method && path.match(@path)
       end
     end
   end
